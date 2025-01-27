@@ -5,6 +5,10 @@ require_once __DIR__ . '/vendor/autoload.php';
 use Dotenv\Dotenv;
 use Eugenevdm\HelloPeterClient;
 use Eugenevdm\BulkSMSClient;
+use Eugenevdm\StateManager;
+
+// Initialize state manager
+$stateManager = new StateManager();
 
 // Load environment variables
 $dotenv = Dotenv::createImmutable(__DIR__);
@@ -14,30 +18,37 @@ $dotenv->load();
 $client = new HelloPeterClient($_ENV['HELLO_PETER_API_KEY']);
 
 try {
-    // Example: Get reviews with some parameters
-    $unrepliedReviewCount = $client->getUnrepliedReviews();
+    $unrepliedReviews = $client->getUnrepliedReviews();
+    // print_r($unrepliedReviews);
+    // die("stop");
+    $notifiedReviews = $stateManager->getNotifiedReviews();
+    
+    // Filter out reviews we've already notified about
+    $newUnrepliedReviews = array_filter(
+        $unrepliedReviews['data'] ?? [],
+        fn($review) => !in_array($review['permalink'], $notifiedReviews)
+    );
+    
+    $newReviewCount = count($newUnrepliedReviews);
+    
+    if ($newReviewCount > 0) {
 
-    // Output the review count
-    $reviewCount = count($unrepliedReviewCount['data'] ?? []);
-    echo "Unreplied review count: " . $reviewCount . "\n";
-    foreach ($unrepliedReviewCount['data'] ?? [] as $review) {
-        echo "----------------------------------------\n";
-        echo "Review ID: " . ($review['id'] ?? 'N/A') . "\n";
-        echo "Rating: " . ($review['rating'] ?? 'N/A') . "\n";
-        echo "Content: " . ($review['content'] ?? 'N/A') . "\n";
-        echo "----------------------------------------\n";
+        // die($newUnrepliedReviews);
+        // Send SMS
+        $sender = new BulkSMSClient($_ENV['BULKSMS_USERNAME'], $_ENV['BULKSMS_PASSWORD']);
+        $message = ($newReviewCount === 1 ? "1 new unreplied review" : "{$newReviewCount} new unreplied reviews");
+        $message .= " at Hello Peter. Please reply to them ASAP.";
+        $recipients = explode(',', $_ENV['BULKSMS_RECIPIENTS']);
+        $sender->sendSMS($message, $recipients);
+
+
+        
+        // Mark reviews as notified
+        foreach ($newUnrepliedReviews as $review) {
+            $stateManager->markReviewAsNotified($review['permalink']);
+        }
     }
-
 } catch (Exception $e) {
     echo "Error: " . $e->getMessage();
-} 
-
-if (isset($reviewCount) && $reviewCount > 0) {
-    echo "Now sending SMS\n";
-    $sender = new BulkSMSClient($_ENV['BULKSMS_USERNAME'], $_ENV['BULKSMS_PASSWORD']);
-    $message = ($reviewCount === 1 ? "1 new unreplied review" : "{$reviewCount} new unreplied reviews");
-    $message .= " at Hello Peter. Please reply to them ASAP.";
-    $recipients = explode(',', $_ENV['BULKSMS_RECIPIENTS']);
-    $sender->sendSMS($message, $recipients);
 }
 
