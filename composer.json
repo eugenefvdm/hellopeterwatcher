@@ -1,0 +1,15 @@
+{
+    "name": "your-vendor/hellopeterwatcher",
+    "description": "HelloPeter API client",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Eugenevdm\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=7.4",
+        "vlucas/phpdotenv": "^5.5",
+        "guzzlehttp/guzzle": "^7.9"
+    }
+}
