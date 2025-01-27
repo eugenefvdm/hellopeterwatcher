@@ -33,7 +33,7 @@ class HelloPeterClient
     {
         $response = $this->client->get('reviews', [
             'query' => [
-                'status' => 'unreplied,unreplied_comment',
+                // 'status' => 'unreplied,unreplied_comment',
                 'channel' => 'HELLOPETER'
             ]
         ]);

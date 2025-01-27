@@ -117,35 +117,6 @@ class BulkSMSClient {
         return 0;
     }
 
-    private function string_to_utf16_hex( $string ) {
-        return bin2hex(mb_convert_encoding($string, "UTF-16", "UTF-8"));
-    }
-
-    private function xml_to_wbxml( $msg_body ) {
-        $wbxmlfile = 'xml2wbxml_'.md5(uniqid(time())).'.wbxml';
-        $xmlfile = 'xml2wbxml_'.md5(uniqid(time())).'.xml';
-
-        //create temp file
-        $fp = fopen($xmlfile, 'w+');
-
-        fwrite($fp, $msg_body);
-        fclose($fp);
-
-        //convert temp file
-        exec('xml2wbxml -v 1.2 -o '.$wbxmlfile.' '.$xmlfile.' 2>/dev/null');
-        if(!file_exists($wbxmlfile)) {
-            $this->print_ln('Fatal error: xml2wbxml conversion failed');
-            return false;
-        }
-
-        $wbxml = trim(file_get_contents($wbxmlfile));
-
-        //remove temp files
-        unlink($xmlfile);
-        unlink($wbxmlfile);
-        return $wbxml;
-    }
-
     private function formatted_server_response( $result ) {
         $this_result = "";
 
