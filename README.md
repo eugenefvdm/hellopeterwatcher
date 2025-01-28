@@ -5,7 +5,7 @@ Hello Peter Watcher is a PHP application that monitors reviews at HelloPeter and
 ## Features
 
 - **Fetch Unreplied Reviews**: Connects to the HelloPeter API to retrieve reviews that have not been replied to.
-- **Send Notifications**: Uses the BulkSMS, Slack, and Telegram APIs to send notifications about unreplied reviews to specified recipients.
+- **Send Notifications**: Uses the BulkSMS, Telegram, and Slack APIs to send notifications about unreplied reviews to specified recipients.
 - **Environment Configuration**: Utilizes environment variables for secure configuration management and enabling of services.
 - **State Management**: Maintains review state to prevent duplicate notifications.
 
