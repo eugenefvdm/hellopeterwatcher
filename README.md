@@ -1,20 +1,20 @@
 # Hello Peter Watcher
 
-Hello Peter Watcher is a PHP application designed to monitor reviews on HelloPeter and send notifications for unreplied reviews using BulkSMS, Slack, and Telegram services.
+Hello Peter Watcher is a PHP application that monitors reviews at HelloPeter and sends a notification count if there are new ones to BulkSMS, Telegram, or Slack.
 
 ## Features
 
 - **Fetch Unreplied Reviews**: Connects to the HelloPeter API to retrieve reviews that have not been replied to.
 - **Send Notifications**: Uses the BulkSMS, Slack, and Telegram APIs to send notifications about unreplied reviews to specified recipients.
-- **Environment Configuration**: Utilizes environment variables for secure configuration management.
-- **State Management**: Maintains review state to prevent duplicate notifications and track review history.
+- **Environment Configuration**: Utilizes environment variables for secure configuration management and enabling of services.
+- **State Management**: Maintains review state to prevent duplicate notifications.
 
 ## Installation
 
 1. **Clone the Repository**: 
    ```bash
-   git clone <repository-url>
-   cd <repository-directory>
+   git clone https://github.com/eugenefvdm/hellopeterwatcher
+   cd hellopeterwatcher
    ```
 
 2. **Install Dependencies**:
@@ -36,7 +36,7 @@ Hello Peter Watcher is a PHP application designed to monitor reviews on HelloPet
 2. **Functionality**:
    - The application will fetch unreplied reviews from HelloPeter.
    - It will output the count and details of these reviews.
-   - If there are unreplied reviews, it will send notifications via SMS, Slack, and Telegram to the recipients specified in the `.env` file.
+   - If there are unreplied reviews, it will send notifications via SMS, Telegram, and Slack to the recipients specified in the `.env` file.
 
 3. **Set Up a CRON Job**:
    - To automate the process of checking for unreplied reviews and sending notifications, you can set up a CRON job.
@@ -52,8 +52,8 @@ Hello Peter Watcher is a PHP application designed to monitor reviews on HelloPet
 
 - **HelloPeterClient**: Handles API requests to HelloPeter to fetch unreplied reviews.
 - **BulkSMSClient**: Manages sending SMS messages through the BulkSMS API.
-- **SlackClient**: Manages sending notifications through Slack.
 - **TelegramClient**: Manages sending notifications through Telegram.
+- **SlackClient**: Manages sending notifications through Slack.
 - **Debugger**: Provides logging functionality for debugging purposes.
 - **StateManager**: Maintains the application state by:
   - Tracking previously notified reviews to prevent duplicate notifications
