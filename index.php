@@ -36,7 +36,7 @@ try {
         $message = ($newReviewCount === 1
             ? "1 new unreplied review"
             : "{$newReviewCount} new unreplied reviews");
-        $message .= " at Hello Peter. Please reply to them ASAP.";
+        $message .= " at Hello Peter. Please reply ASAP.";
 
         // Send SMS
         if ($_ENV['ENABLE_BULKSMS'] === 'true') {

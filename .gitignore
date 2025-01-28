@@ -2,3 +2,6 @@
 .env
 composer.lock
 *.log
+/storage/notified_reviews.json
+
+
