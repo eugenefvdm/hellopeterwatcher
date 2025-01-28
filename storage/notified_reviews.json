@@ -1,31 +1,24 @@
 {
-    "notified_reviews": [
-        "the-vanderhost-team-have-an-incredible-turn-around-time-and-great-pricing-for-all-of-their-services-5512267",
-        "great-to-work-with-knowledgeable-and-professional-5512218",
-        "professional-fast-and-friendly-service-5512192",
-        "cape-town-hosting-5512113",
-        "wow-finally-a-company-that-offers-real-support-5508826"
-    ],
     "notifications": {
-        "the-vanderhost-team-have-an-incredible-turn-around-time-and-great-pricing-for-all-of-their-services-5512267": {
-            "notified_at": "2025-01-27 19:23:13",
-            "timestamp": 1738005793
+        "professional-fast-and-friendly-service-5512192": {
+            "notified_at": "2025-01-28 06:31:52",
+            "timestamp": 1738045912
         },
         "great-to-work-with-knowledgeable-and-professional-5512218": {
-            "notified_at": "2025-01-27 19:23:13",
-            "timestamp": 1738005793
-        },
-        "professional-fast-and-friendly-service-5512192": {
-            "notified_at": "2025-01-27 19:23:13",
-            "timestamp": 1738005793
-        },
-        "cape-town-hosting-5512113": {
-            "notified_at": "2025-01-27 19:23:13",
-            "timestamp": 1738005793
+            "notified_at": "2025-01-28 06:45:03",
+            "timestamp": 1738046703
         },
         "wow-finally-a-company-that-offers-real-support-5508826": {
-            "notified_at": "2025-01-27 19:23:13",
-            "timestamp": 1738005793
+            "notified_at": "2025-01-28 06:51:45",
+            "timestamp": 1738047105
+        },
+        "the-vanderhost-team-have-an-incredible-turn-around-time-and-great-pricing-for-all-of-their-services-5512267": {
+            "notified_at": "2025-01-28 06:52:12",
+            "timestamp": 1738047132
+        },
+        "cape-town-hosting-5512113": {
+            "notified_at": "2025-01-28 06:53:04",
+            "timestamp": 1738047184
         }
     }
 }

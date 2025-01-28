@@ -24,10 +24,17 @@ class BulkSMSClient {
     public function sendSMS($message, $recipients) {
         debugger('SMS sending starts');
         
-        if (!is_array($recipients)) {
+        // Handle different input types for recipients
+        if (is_string($recipients)) {
+            // Split comma-separated string into array, and trim whitespace
+            $recipients = array_map('trim', explode(',', $recipients));
+        } elseif (!is_array($recipients)) {
             $recipients = [$recipients];
         }
 
+        // Filter out empty values that might come from the .env
+        $recipients = array_filter($recipients);
+        
         $results = [];
         foreach ($recipients as $recipient) {
             $results[$recipient] = $this->sendToSingleRecipient($message, $recipient);
