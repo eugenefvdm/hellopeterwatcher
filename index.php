@@ -30,35 +30,32 @@ try {
         fn($review) => !in_array($review['permalink'], $notifiedReviews)
     );
 
-    $newReviewCount = count($newUnrepliedReviews);
-
-    if ($newReviewCount > 0) {
-        $message = ($newReviewCount === 1
-            ? "1 new unreplied review"
-            : "{$newReviewCount} new unreplied reviews");
-        $message .= " at Hello Peter. Please reply ASAP.";
-
-        // Send SMS
-        if ($_ENV['ENABLE_BULKSMS'] === 'true') {
-            $sender = new BulkSMSClient($_ENV['BULKSMS_USERNAME'], $_ENV['BULKSMS_PASSWORD']);
-            $recipients = explode(',', $_ENV['BULKSMS_RECIPIENTS']);
-            $sender->sendSMS($message, $recipients);
-        }
-
-        // Send Slack notification
-        if ($_ENV['ENABLE_SLACK'] === 'true') {
-            $slack = new SlackClient($_ENV['SLACK_WEBHOOK_URL']);
-            $slack->sendMessage($message);
-        }
-
-        // Send Telegram notification
-        if ($_ENV['ENABLE_TELEGRAM'] === 'true') {
-            $telegram = new TelegramClient($_ENV['TELEGRAM_BOT_TOKEN'], $_ENV['TELEGRAM_CHAT_ID']);
-            $telegram->sendMessage($message);
-        }
-
-        // Mark reviews as notified
+    if (count($newUnrepliedReviews) > 0) {
         foreach ($newUnrepliedReviews as $review) {
+            $stars = str_repeat('⭐️', $review['rating'] ?? 0);
+            $reviewerName = $review['user'] ?? 'Unknown';
+            $message = "You received a {$stars} review by {$reviewerName} at Hellopeter. Please reply ASAP.";
+
+            // Send SMS
+            if ($_ENV['ENABLE_BULKSMS'] === 'true') {
+                $sender = new BulkSMSClient($_ENV['BULKSMS_USERNAME'], $_ENV['BULKSMS_PASSWORD']);
+                $recipients = explode(',', $_ENV['BULKSMS_RECIPIENTS']);
+                $sender->sendSMS($message, $recipients);
+            }
+
+            // Send Slack notification
+            if ($_ENV['ENABLE_SLACK'] === 'true') {
+                $slack = new SlackClient($_ENV['SLACK_WEBHOOK_URL']);
+                $slack->sendMessage($message);
+            }
+
+            // Send Telegram notification
+            if ($_ENV['ENABLE_TELEGRAM'] === 'true') {
+                $telegram = new TelegramClient($_ENV['TELEGRAM_BOT_TOKEN'], $_ENV['TELEGRAM_CHAT_ID']);
+                $telegram->sendMessage($message);
+            }
+
+            // Mark review as notified
             $stateManager->markReviewAsNotified($review['permalink']);
         }
     }

@@ -7,10 +7,23 @@
             "Eugenevdm\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
     "require": {
         "php": ">=7.4",
         "vlucas/phpdotenv": "^5.5",
         "guzzlehttp/guzzle": "^7.9"
     },
-    "license": "MIT"
+    "license": "MIT",
+    "require-dev": {
+        "pestphp/pest": "*"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
 }
