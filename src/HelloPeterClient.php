@@ -23,21 +23,33 @@ class HelloPeterClient
     }
 
     /**
-     * Get reviews with optional parameters
+     * Get reviews with optional status filter
      *
-     * @param array $parameters Optional parameters for filtering reviews
+     * @param string|null $status Status filter (e.g., 'unreplied,unreplied_comment'), null for all reviews
      * @return array
      * @throws GuzzleException
      */
-    public function getUnrepliedReviews(array $parameters = [])
+    public function getReviews(?string $status = 'unreplied,unreplied_comment'): array
     {
-        $response = $this->client->get('reviews', [
-            'query' => [
-                'status' => 'unreplied,unreplied_comment',
-                'channel' => 'HELLOPETER'
-            ]
-        ]);
+        $query = ['channel' => 'HELLOPETER'];
+
+        if ($status !== null) {
+            $query['status'] = $status;
+        }
+
+        $response = $this->client->get('reviews', ['query' => $query]);
 
         return json_decode($response->getBody(), true);
+    }
+
+    /**
+     * Get unreplied reviews
+     *
+     * @return array
+     * @throws GuzzleException
+     */
+    public function getUnrepliedReviews(): array
+    {
+        return $this->getReviews('unreplied,unreplied_comment');
     }
 } 
