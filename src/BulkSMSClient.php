@@ -8,11 +8,13 @@ class BulkSMSClient {
     private $username;
     private $password;
     private $url;
+    private $encoding;
 
-    public function __construct($username, $password) {
+    public function __construct($username, $password, $encoding = '7bit') {
         $this->username = $username;
         $this->password = $password;
         $this->url = 'http://bulksms.2way.co.za/eapi/submission/send_sms/2/2.0';
+        $this->encoding = strtolower($encoding);
     }
 
     /**
@@ -44,18 +46,105 @@ class BulkSMSClient {
         return $results;
     }
 
+    /**
+     * Convert message to GSM-7 safe text for SMS (emoji show as ? on many networks).
+     * Replaces star emoji runs with "N star " e.g. ⭐️⭐️⭐️⭐️⭐️ → "5 star ".
+     */
+    public function toSmsSafeMessage(string $message): string
+    {
+        $replaced = preg_replace_callback(
+            '/(\x{2B50}\x{FE0F}?)+/u',
+            function (array $m): string {
+                $count = preg_match_all('/\x{2B50}/u', $m[0]);
+                return $count . ' star';
+            },
+            $message
+        );
+
+        return $replaced ?? $message;
+    }
+
     private function sendToSingleRecipient($message, $recipient) {
-        $post_body = $this->seven_bit_sms($message, $recipient);
+        if ($this->encoding === '16bit') {
+            $shortMessage = $this->shortenForUnicodeSms($message);
+            $post_body = $this->sixteen_bit_sms($shortMessage, $recipient);
+        } else {
+            $safeMessage = $this->toSmsSafeMessage($message);
+            $post_body = $this->seven_bit_sms($safeMessage, $recipient);
+        }
         $result = $this->send_message($post_body);
-        
+
         if ($result['success']) {
             debugger("Success to $recipient", $result);
         } else {
             debugger("Fail to $recipient", $result);
         }
-        
+
         $this->print_ln($this->formatted_server_response($result));
         return $result;
+    }
+
+    /**
+     * Shorten message to fit 16-bit SMS limit (70 chars). Uses compact template for review pattern.
+     * Pattern allows optional trailing text after "Please reply ASAP." (e.g. test suffix).
+     */
+    private function shortenForUnicodeSms(string $message, int $maxLen = 70): string
+    {
+        $pattern = '/^You received a (.+?) review by (.+?) at Hellopeter\. Please reply ASAP\.(.*)$/us';
+        if (preg_match($pattern, $message, $m)) {
+            $stars = $m[1];
+            $name = trim($m[2]);
+            $compact = $stars . ' review by ' . $name . ' @ Hellopeter. Reply ASAP.';
+            $len = mb_strlen($compact, 'UTF-8');
+            if ($len <= $maxLen) {
+                debugger('SMS 16bit: using compact template', $compact);
+                return $compact;
+            }
+            $prefix = $stars . ' review by ';
+            $suffix = ' @ Hellopeter. Reply ASAP.';
+            $nameMax = $maxLen - mb_strlen($prefix, 'UTF-8') - mb_strlen($suffix, 'UTF-8');
+            if ($nameMax < 4) {
+                $out = mb_substr($compact, 0, $maxLen - 3, 'UTF-8') . '...';
+                debugger('SMS 16bit: compact truncated (name too short)', $out);
+                return $out;
+            }
+            $truncatedName = mb_substr($name, 0, $nameMax - 3, 'UTF-8') . '...';
+            $out = $prefix . $truncatedName . $suffix;
+            debugger('SMS 16bit: using compact template, name truncated', $out);
+            return $out;
+        }
+        $len = mb_strlen($message, 'UTF-8');
+        if ($len <= $maxLen) {
+            return $message;
+        }
+        $out = mb_substr($message, 0, $maxLen - 3, 'UTF-8') . '...';
+        debugger('SMS 16bit: regex did not match, generic truncation used', $out);
+        return $out;
+    }
+
+    /**
+     * Convert UTF-8 string to hex-encoded UCS-2 big-endian for BulkSMS 16-bit API.
+     */
+    private function utf8ToUcs2Hex(string $utf8): string
+    {
+        $ucs2be = mb_convert_encoding($utf8, 'UCS-2BE', 'UTF-8');
+        return bin2hex($ucs2be);
+    }
+
+    /**
+     * Build post body for 16-bit Unicode SMS (emoji support, max 70 chars).
+     */
+    private function sixteen_bit_sms(string $message, string $msisdn): string
+    {
+        $message = $this->shortenForUnicodeSms($message, 70);
+        $post_fields = array(
+            'username' => $this->username,
+            'password' => $this->password,
+            'message'  => $this->utf8ToUcs2Hex($message),
+            'msisdn'   => $msisdn,
+            'dca'      => '16bit',
+        );
+        return $this->make_post_body($post_fields);
     }
 
     private function seven_bit_sms($message, $msisdn) {

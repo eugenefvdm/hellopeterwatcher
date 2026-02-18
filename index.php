@@ -38,7 +38,7 @@ try {
 
             // Send SMS
             if ($_ENV['ENABLE_BULKSMS'] === 'true') {
-                $sender = new BulkSMSClient($_ENV['BULKSMS_USERNAME'], $_ENV['BULKSMS_PASSWORD']);
+                $sender = new BulkSMSClient($_ENV['BULKSMS_USERNAME'], $_ENV['BULKSMS_PASSWORD'], $_ENV['BULKSMS_ENCODING'] ?? '7bit');
                 $recipients = explode(',', $_ENV['BULKSMS_RECIPIENTS']);
                 $sender->sendSMS($message, $recipients);
             }
