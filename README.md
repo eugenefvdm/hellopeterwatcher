@@ -1,6 +1,6 @@
 # Hello Peter Watcher
 
-![Tests](https://github.com/eugenefvdm/hellopeterwatches/actions/workflows/tests.yml/badge.svg)
+![Tests](https://github.com/eugenefvdm/hellopeterwatcher/actions/workflows/tests.yml/badge.svg)
 
 Hello Peter Watcher is a PHP application that monitors unreplied reviews at HelloPeter and sends a notification count if there are new ones to BulkSMS, Telegram, or Slack.
 
