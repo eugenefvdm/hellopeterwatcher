@@ -4,7 +4,7 @@ namespace Eugenevdm;
 
 if (!function_exists('Eugenevdm\\debugger')) {
 function debugger( $message, $variable = '' ) {
-	$serverAddr     = $_SERVER['SERVER_ADDR'];
+	$serverAddr     = $_SERVER['SERVER_ADDR'] ?? 'cli';
 	$dateTimeFormat = date( 'Y-m-d H:i:s' );
 	$prefix         = "[$dateTimeFormat] $serverAddr.PREFIX: ";
 	if ( is_array( $variable ) or is_object( $variable ) ) {

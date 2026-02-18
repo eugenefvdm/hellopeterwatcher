@@ -30,8 +30,12 @@ function getReviews(): array
 {
     if (USE_LIVE_DATA) {
         $dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__, 2));
-        $dotenv->load();
-        $client = new HelloPeterClient($_ENV['HELLO_PETER_API_KEY']);
+        $dotenv->safeLoad();
+        $apiKey = $_ENV['HELLO_PETER_API_KEY'] ?? '';
+        if ($apiKey === '' || str_contains($apiKey, 'your_')) {
+            return getMockReviews();
+        }
+        $client = new HelloPeterClient($apiKey);
         return $client->getReviews(LIVE_TEST_STATUS);
     }
 

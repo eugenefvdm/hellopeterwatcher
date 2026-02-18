@@ -69,7 +69,7 @@ it('encodes UTF-8 to UCS-2BE hex for 16-bit API', function () {
 
 it('sends a real SMS when ENABLE_SMS_TEST is true and credentials are set', function () {
     $dotenv = Dotenv\Dotenv::createImmutable(dirname(__DIR__, 2));
-    $dotenv->load();
+    $dotenv->safeLoad();
 
     if (($_ENV['ENABLE_SMS_TEST'] ?? '') !== 'true') {
         $this->markTestSkipped('Set ENABLE_SMS_TEST=true and BulkSMS credentials in .env to run this test.');
